@@ -13,10 +13,12 @@ func NewConfig() *ServerConfig {
 	router := gin.Default()
 	ctrl := controllers.Controller{}
 	ctrl.Init()
-	authorRouter := router.Group("/author")
+	authorRouter := router.Group("/api/author")
 	{
-		authorRouter.GET("/get", ctrl.GetAuthor)
-		authorRouter.POST("/create", ctrl.CreateAuthor)
+		authorRouter.GET("/", ctrl.GetAuthor)
+		authorRouter.POST("/", ctrl.CreateAuthor)
+		authorRouter.PUT("/", ctrl.UpdateAuthor)
+		authorRouter.DELETE("/", ctrl.DeleteAuthor)
 	}
 	return &ServerConfig{
 		Router: router,

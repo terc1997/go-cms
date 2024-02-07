@@ -1,4 +1,4 @@
-package models
+package db
 
 import (
 	"fmt"
@@ -6,9 +6,9 @@ import (
 )
 
 func TestAuthor(t *testing.T) {
-	path := "/Users/tarsis/Documents/Studies/Go/server/cms.db"
+	path := "/Users/tarsis/Documents/Studies/Go/go-cms/cms.db"
 
-	m := NewModel(path)
+	m := NewDBConfig(path)
 	email := "terc@abc.com"
 
 	t.Run("Create author", func(t *testing.T) {
@@ -25,7 +25,9 @@ func TestAuthor(t *testing.T) {
 		if err != nil {
 			fmt.Printf("User not found %s\n", err)
 		}
-		fmt.Printf("username: %v, email: %v\n", result.Name, result.Email)
+		for i := 0; i < len(result); i++ {
+			fmt.Printf("username: %v, email: %v\n", result[i].Name, result[i].Email)
+		}
 	})
 
 	t.Run("Update author", func(t *testing.T) {
