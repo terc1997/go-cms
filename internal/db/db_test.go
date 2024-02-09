@@ -6,9 +6,8 @@ import (
 )
 
 func TestAuthor(t *testing.T) {
-	path := "/Users/tarsis/Documents/Studies/Go/go-cms/cms.db"
 
-	m := NewDBConfig(path)
+	m := NewDBConfig()
 	email := "terc@abc.com"
 
 	t.Run("Create author", func(t *testing.T) {

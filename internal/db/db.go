@@ -2,6 +2,7 @@ package db
 
 import (
 	"log"
+	"os"
 
 	"github.com/terc1997/go-cms/internal/models"
 	"gorm.io/driver/sqlite"
@@ -12,12 +13,20 @@ type DBConfig struct {
 	DB *gorm.DB
 }
 
-func NewDBConfig(path string) *DBConfig {
-	db, err := gorm.Open(sqlite.Open(path), &gorm.Config{})
+func NewDBConfig() *DBConfig {
+	path := os.Getenv("DB_PATH")
+	var db *gorm.DB
+	var err error
+	if path != "" {
+		db, err = gorm.Open(sqlite.Open(path), &gorm.Config{})
+	} else {
+		db, err = gorm.Open(sqlite.Open("/Users/tarsis/Documents/Studies/Go/go-cms/cms.db"), &gorm.Config{})
+	}
 	if err != nil {
 		panic("Could not open connection to DB")
 	}
 	db.AutoMigrate(&models.Author{})
+	db.AutoMigrate(&models.Article{})
 	return &DBConfig{
 		DB: db,
 	}
@@ -65,4 +74,26 @@ func (dbc *DBConfig) UpdateAuthor(name, email string) error {
 	result := dbc.DB.Save(&author)
 
 	return result.Error
+}
+
+func (dbc *DBConfig) GetArticles() (result []models.Article, err error) {
+	ret := dbc.DB.Find(&result)
+	err = ret.Error
+	return
+}
+
+func (dbc *DBConfig) CreateArticle(title, content, email string) (uint, error) {
+	author, err := dbc.GetAuthor(email)
+	if err != nil {
+		log.Fatal("Invalid author")
+	}
+	article := models.Article{
+		Title:    title,
+		Content:  content,
+		AuthorID: author[0].ID,
+	}
+
+	result := dbc.DB.Create(&article)
+
+	return article.ID, result.Error
 }

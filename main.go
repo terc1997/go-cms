@@ -1,10 +1,17 @@
 package main
 
-import "github.com/terc1997/go-cms/cmd"
+import (
+	"time"
+
+	"github.com/terc1997/go-cms/cmd"
+	"github.com/terc1997/go-cms/internal/cache"
+)
 
 func main() {
-	server := cmd.NewConfig()
+	app := cmd.NewConfig()
+	var initialData []string
+	cache.NewCache(initialData, 10*time.Second)
 
-	server.Run("localhost:8080")
+	app.Run("localhost:8080")
 
 }

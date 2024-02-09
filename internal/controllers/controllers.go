@@ -3,7 +3,6 @@ package controllers
 import (
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/terc1997/go-cms/internal/db"
@@ -17,12 +16,7 @@ type Controller struct {
 }
 
 func (ctrl *Controller) Init() {
-	path := os.Getenv("DB_PATH")
-	if path != "" {
-		ctrl.dbc = *db.NewDBConfig(path)
-	} else {
-		ctrl.dbc = *db.NewDBConfig("/Users/tarsis/Documents/Studies/Go/go-cms/cms.db")
-	}
+	ctrl.dbc = *db.NewDBConfig()
 }
 
 func (ctrl *Controller) GetAuthor(c *gin.Context) {
@@ -99,6 +93,26 @@ func (ctrl *Controller) DeleteAuthor(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, &models.APIResponseModel{
 			Message: "User deleted sucessfully",
+			Body:    "",
+		})
+	}
+}
+
+func (ctrl *Controller) CreateArticle(c *gin.Context) {
+	method := "CreateArticle\t"
+	var jsonArticle models.JSONArticle
+	c.Bind(&jsonArticle)
+	log.Printf("%s Received from API: %v\n", method, jsonArticle)
+	status, err := ctrl.dbc.CreateArticle(jsonArticle.Title, jsonArticle.Content, jsonArticle.Email)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, &models.APIResponseModel{
+			Message: "User not created",
+			Body:    "",
+		})
+	} else {
+		log.Printf("Creation status: %d\n", status)
+		c.JSON(http.StatusOK, &models.APIResponseModel{
+			Message: "Article created sucessfully",
 			Body:    "",
 		})
 	}
