@@ -5,11 +5,11 @@ import (
 	"github.com/terc1997/go-cms/internal/controllers"
 )
 
-type ServerConfig struct {
+type Application struct {
 	Router *gin.Engine
 }
 
-func NewConfig() *ServerConfig {
+func NewConfig() *Application {
 	router := gin.Default()
 	ctrl := controllers.Controller{}
 	ctrl.Init()
@@ -20,11 +20,16 @@ func NewConfig() *ServerConfig {
 		authorRouter.PUT("/", ctrl.UpdateAuthor)
 		authorRouter.DELETE("/", ctrl.DeleteAuthor)
 	}
-	return &ServerConfig{
+	articleRouter := router.Group("/api/article")
+	{
+		articleRouter.POST("/", ctrl.CreateArticle)
+	}
+
+	return &Application{
 		Router: router,
 	}
 }
 
-func (sc *ServerConfig) Run(address string) {
+func (sc *Application) Run(address string) {
 	sc.Router.Run(address)
 }
