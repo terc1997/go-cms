@@ -1,0 +1,17 @@
+name: go-cms-ci
+run-name: ${{ github.actor}} - Go CMS
+on:
+    [push]
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Create SQLite DB
+              run: sqlite3 cms.db
+            - name: Build Go project
+              run: make build
+            - name: Run Go project
+              run: make run
+              env: 
+                DB_PATH: "./cms.db"  
